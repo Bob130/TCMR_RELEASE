@@ -54,7 +54,6 @@ np.random.seed(1)
 def main(args):
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
-
     """ Prepare input video (images) """
     video_file = args.vid_file
     if video_file.startswith('https://www.youtube.com'):
@@ -124,7 +123,10 @@ def main(args):
     # Get feature_extractor
     from lib.models.spin import hmr
     hmr = hmr().to(device)
-    checkpoint = torch.load(osp.join(BASE_DATA_DIR, 'spin_model_checkpoint.pth.tar'))
+
+    # checkpoint = torch.load(osp.join(BASE_DATA_DIR, 'spin_model_checkpoint.pth.tar'))
+    checkpoint = torch.load('2021_11_13-02_20_32.pt')  # My SPIN model
+
     hmr.load_state_dict(checkpoint['model'], strict=False)
     hmr.eval()
 
