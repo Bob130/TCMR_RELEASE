@@ -50,7 +50,7 @@ def rotate_2d(pt_2d, rot_rad):
     yy = x * sn + y * cs
     return np.array([xx, yy], dtype=np.float32)
 
-def gen_trans_from_patch_cv(c_x, c_y, src_width, src_height, dst_width, dst_height, scale, rot, inv=False):
+def gen_trans_from_patch_cv(c_x, c_y, src_width, src_height, dst_width, dst_height, img_height, img_width, scale, rot, inv=False):
     # augment size with scale
     src_w = src_width * scale
     src_h = src_height * scale
@@ -69,6 +69,17 @@ def gen_trans_from_patch_cv(c_x, c_y, src_width, src_height, dst_width, dst_heig
     dst_rightdir = np.array([dst_w * 0.5, 0], dtype=np.float32)
 
     src = np.zeros((3, 2), dtype=np.float32)
+
+    # 不填黑抠图
+    src_center_dx = 0
+    src_center_dy = 0
+    if (src_center + src_downdir)[1] > img_height:
+        src_center_dy = -((src_center + src_downdir)[1] - img_height)
+    if (src_center + src_rightdir)[0] > img_width:
+        src_center_dx = -((src_center + src_rightdir)[0] - img_width)
+    src_center[0] = src_center[0] + src_center_dx
+    src_center[1] = src_center[1] + src_center_dy
+
     src[0, :] = src_center
     src[1, :] = src_center + src_downdir
     src[2, :] = src_center + src_rightdir
@@ -93,7 +104,7 @@ def generate_patch_image_cv(cvimg, c_x, c_y, bb_width, bb_height, patch_width, p
         img = img[:, ::-1, :]
         c_x = img_width - c_x - 1
 
-    trans = gen_trans_from_patch_cv(c_x, c_y, bb_width, bb_height, patch_width, patch_height, scale, rot, inv=False)
+    trans = gen_trans_from_patch_cv(c_x, c_y, bb_width, bb_height, patch_width, patch_height, img_height, img_width, scale, rot, inv=False)
 
     img_patch = cv2.warpAffine(img, trans, (int(patch_width), int(patch_height)),
                                flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
