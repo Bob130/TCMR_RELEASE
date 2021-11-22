@@ -70,9 +70,9 @@ class CropDataset(Dataset):
             scale=self.scale,
             crop_size=self.crop_size)
         if self.has_keypoints:
-            return norm_img, kp_2d
+            return norm_img, kp_2d, self.bboxes
         else:
-            return norm_img
+            return norm_img, self.bboxes
 
 
 class FeatureDataset(Dataset):

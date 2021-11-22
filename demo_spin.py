@@ -131,7 +131,7 @@ def main(args):
     hmr = hmr().to(device)
 
     # checkpoint = torch.load(osp.join(BASE_DATA_DIR, 'spin_model_checkpoint.pth.tar'))
-    checkpoint = torch.load('2021_11_13-02_20_32.pt')  # My SPIN model
+    checkpoint = torch.load('2021_11_18-04_09_31.pt')  # My SPIN model
 
     hmr.load_state_dict(checkpoint['model'], strict=False)
     hmr.eval()
@@ -165,9 +165,10 @@ def main(args):
             pred_cam, pred_verts, pred_pose, pred_betas, pred_joints3d = [], [], [], [], []
             for i, batch in enumerate(crop_dataloader):
                 if has_keypoints:
-                    batch, nj2d = batch
+                    batch, nj2d, bboxes = batch
                     norm_joints2d.append(nj2d.numpy().reshape(-1, 21, 3))
 
+                batch, bboxes = batch
                 batch = batch.to(device)
                 spin_output = hmr(batch)[0]
 
@@ -192,6 +193,7 @@ def main(args):
         pred_betas = pred_betas[0].cpu().numpy()
         pred_joints3d = pred_joints3d[0].cpu().numpy()
 
+        bboxes = bboxes[-1].numpy()  # 返回第1维是batch，取最后一个是最新的bboxes
         bboxes[:, 2:] = bboxes[:, 2:] * 1.2
         if args.render_plain:
             pred_cam[:,0], pred_cam[:,1:] = 1, 0  # np.array([[1, 0, 0]])

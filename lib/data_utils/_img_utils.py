@@ -50,7 +50,7 @@ def rotate_2d(pt_2d, rot_rad):
     yy = x * sn + y * cs
     return np.array([xx, yy], dtype=np.float32)
 
-def gen_trans_from_patch_cv(c_x, c_y, src_width, src_height, dst_width, dst_height, img_height, img_width, scale, rot, inv=False):
+def gen_trans_from_patch_cv(c_x, c_y, src_width, src_height, bbox, dst_width, dst_height, img_height, img_width, scale, rot, inv=False):
     # augment size with scale
     src_w = src_width * scale
     src_h = src_height * scale
@@ -79,6 +79,8 @@ def gen_trans_from_patch_cv(c_x, c_y, src_width, src_height, dst_width, dst_heig
         src_center_dx = -((src_center + src_rightdir)[0] - img_width)
     src_center[0] = src_center[0] + src_center_dx
     src_center[1] = src_center[1] + src_center_dy
+    bbox[0] = src_center[0]
+    bbox[1] = src_center[1]
 
     src[0, :] = src_center
     src[1, :] = src_center + src_downdir
@@ -96,7 +98,7 @@ def gen_trans_from_patch_cv(c_x, c_y, src_width, src_height, dst_width, dst_heig
 
     return trans
 
-def generate_patch_image_cv(cvimg, c_x, c_y, bb_width, bb_height, patch_width, patch_height, do_flip, scale, rot):
+def generate_patch_image_cv(cvimg, c_x, c_y, bb_width, bb_height, bbox, patch_width, patch_height, do_flip, scale, rot):
     img = cvimg.copy()
     img_height, img_width, img_channels = img.shape
 
@@ -104,7 +106,7 @@ def generate_patch_image_cv(cvimg, c_x, c_y, bb_width, bb_height, patch_width, p
         img = img[:, ::-1, :]
         c_x = img_width - c_x - 1
 
-    trans = gen_trans_from_patch_cv(c_x, c_y, bb_width, bb_height, patch_width, patch_height, img_height, img_width, scale, rot, inv=False)
+    trans = gen_trans_from_patch_cv(c_x, c_y, bb_width, bb_height, bbox, patch_width, patch_height, img_height, img_width, scale, rot, inv=False)
 
     img_patch = cv2.warpAffine(img, trans, (int(patch_width), int(patch_height)),
                                flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
@@ -245,6 +247,7 @@ def get_single_image_crop_demo(image, bbox, kp_2d, scale=1.2, crop_size=224):
         c_y=bbox[1],
         bb_width=bbox[2],
         bb_height=bbox[3],
+        bbox = bbox,
         patch_width=crop_size,
         patch_height=crop_size,
         do_flip=False,
