@@ -158,9 +158,11 @@ def main(args):
         frames = dataset.frames
         has_keypoints = True if joints2d is not None else False
 
-        crop_dataloader = DataLoader(dataset, batch_size=256, num_workers=16)
+        crop_dataloader = DataLoader(dataset, batch_size=256, num_workers=1)  # works=1 让bboxes中batch最后一个返回最新的bboxes
 
         # 给定初始shape和cam参数
+        # init_shape = None
+        # init_cam = None
         init_shape = torch.FloatTensor([2.0006,  0.1440,  0.7350,  1.8558, -0.1161,  0.3333, -0.1810, -0.1331, 0.3087, -0.1796]).unsqueeze(0).to(device)
         init_cam = torch.FloatTensor([0.8599, -0.0469,  0.2369]).unsqueeze(0).to(device)
         with torch.no_grad():
