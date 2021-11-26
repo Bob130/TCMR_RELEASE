@@ -107,8 +107,8 @@ def video_to_images(vid_file, img_folder=None, return_info=False):
 
     command = ['ffmpeg',
                '-i', vid_file,
-               # '-r', '30000/1001',
-               '-r', '3',
+               '-r', '30000/1001',
+               # '-r', '3',
                '-f', 'image2',
                '-v', 'error',
                f'{img_folder}/%06d.jpg']
@@ -140,7 +140,7 @@ def images_to_video(img_folder, output_vid_file):
     # ]
 
     command = [
-        'ffmpeg', '-framerate', '3', '-y', '-threads', '16', '-i', f'{img_folder}/%06d.jpg', '-profile:v', 'baseline',
+        'ffmpeg', '-framerate', '30000/1001', '-y', '-threads', '16', '-i', f'{img_folder}/%06d.jpg', '-profile:v', 'baseline',
         '-level', '3.0', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-an', '-v', 'error', output_vid_file,
     ]
 

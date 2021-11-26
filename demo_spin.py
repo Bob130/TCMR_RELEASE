@@ -187,11 +187,11 @@ def main(args):
 
 
         # ========= Save results to a pickle file ========= #
-        pred_cam = pred_cam[0].cpu().numpy()
-        pred_verts = pred_verts[0].cpu().numpy()
-        pred_pose = pred_pose[0].cpu().numpy()
-        pred_betas = pred_betas[0].cpu().numpy()
-        pred_joints3d = pred_joints3d[0].cpu().numpy()
+        pred_cam = torch.cat(pred_cam, 0).cpu().numpy()
+        pred_verts = torch.cat(pred_verts, 0).cpu().numpy()
+        pred_pose = torch.cat(pred_pose, 0).cpu().numpy()
+        pred_betas = torch.cat(pred_betas, 0).cpu().numpy()
+        pred_joints3d = torch.cat(pred_joints3d, 0).cpu().numpy()
 
         bboxes = bboxes[-1].numpy()  # 返回第1维是batch，取最后一个是最新的bboxes
         bboxes[:, 2:] = bboxes[:, 2:] * 1.2
