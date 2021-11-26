@@ -146,10 +146,16 @@ class HMR(nn.Module):
 
         if init_pose is None:
             init_pose = self.init_pose.expand(batch_size, -1)
+        else:
+            init_pose = init_pose.expand(batch_size, -1)
         if init_shape is None:
             init_shape = self.init_shape.expand(batch_size, -1)
+        else:
+            init_shape = init_shape.expand(batch_size, -1)
         if init_cam is None:
             init_cam = self.init_cam.expand(batch_size, -1)
+        else:
+            init_cam = init_cam.expand(batch_size, -1)
 
         x = self.conv1(x)
         x = self.bn1(x)
